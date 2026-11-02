@@ -1,0 +1,17 @@
+{
+  "name": "uno-game",
+  "version": "1.0.0",
+  "description": "UNO: игра на одном устройстве и онлайн-мультиплеер по коду комнаты",
+  "main": "server.js",
+  "private": true,
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/rules.test.js"
+  },
+  "engines": {
+    "node": ">=16"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

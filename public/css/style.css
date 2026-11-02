@@ -1,0 +1,518 @@
+/* ============================================================
+   UNO — оформление в стиле Claude: тёплая палитра, терракотовый акцент,
+   засечные заголовки, мягкие границы. Светлая и тёмная темы.
+   ============================================================ */
+
+:root {
+  color-scheme: light;
+  --bg: #faf9f5;
+  --surface: #ffffff;
+  --surface-2: #f0eee6;
+  --line: #e6e3d8;
+  --ink: #141413;
+  --muted: #6f6e68;
+  --accent: #c96442;
+  --accent-hover: #b5563a;
+  --accent-soft: rgba(201, 100, 66, 0.12);
+  --on-accent: #ffffff;
+
+  /* Цвета карт: единые для фона, значка в центре, фишек и кнопок выбора цвета */
+  --red: #d9503f;
+  --yellow: #fbb900;
+  --green: #3f9d62;
+  --blue: #4a6fd8;
+  --wild: #232220;
+  --oval: #ffffff;
+
+  --back: #2b2a28;
+  --back-2: #3b3936;
+  --back-3: #4a4844;
+  --dim: grayscale(0.2) brightness(0.9);
+
+  --shadow: 0 1px 2px rgba(20, 20, 19, 0.05), 0 8px 24px rgba(20, 20, 19, 0.06);
+  --card-shadow: 0 1px 2px rgba(20, 20, 19, 0.16), 0 8px 18px rgba(20, 20, 19, 0.14);
+  --scrim: rgba(20, 20, 19, 0.38);
+
+  --serif: "Tiempos Headline", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+  --card-w: clamp(64px, 19vw, 88px);
+  --card-h: calc(var(--card-w) * 1.45);
+  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Тёмная тема: по настройке системы или по выбору игрока */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #1f1e1d;
+    --surface: #2b2a28;
+    --surface-2: #353432;
+    --line: #3d3b37;
+    --ink: #faf9f5;
+    --muted: #a8a69c;
+    --accent: #d97757;
+    --accent-hover: #e48a6b;
+    --accent-soft: rgba(217, 119, 87, 0.16);
+    --on-accent: #1f1e1d;
+    --red: #e5604f;
+    --yellow: #ffc21a;
+    --green: #4cb272;
+    --blue: #6584ea;
+    --wild: #121211;
+    --back: #3b3a36;
+    --back-2: #302f2c;
+    --back-3: #262523;
+    --dim: grayscale(0.2) brightness(0.62);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+    --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 18px rgba(0, 0, 0, 0.35);
+    --scrim: rgba(0, 0, 0, 0.6);
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #1f1e1d;
+  --surface: #2b2a28;
+  --surface-2: #353432;
+  --line: #3d3b37;
+  --ink: #faf9f5;
+  --muted: #a8a69c;
+  --accent: #d97757;
+  --accent-hover: #e48a6b;
+  --accent-soft: rgba(217, 119, 87, 0.16);
+  --on-accent: #1f1e1d;
+  --red: #e5604f;
+  --yellow: #ffc21a;
+  --green: #4cb272;
+  --blue: #6584ea;
+  --wild: #121211;
+  --back: #3b3a36;
+  --back-2: #302f2c;
+  --back-3: #262523;
+  --dim: grayscale(0.2) brightness(0.62);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+  --card-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 18px rgba(0, 0, 0, 0.35);
+  --scrim: rgba(0, 0, 0, 0.6);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+  transition: background-color 0.3s, color 0.3s;
+}
+button, input { font: inherit; color: inherit; }
+
+#app {
+  max-width: 480px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding: calc(env(safe-area-inset-top) + 16px) 16px calc(env(safe-area-inset-bottom) + 16px);
+  display: flex;
+  flex-direction: column;
+}
+.screen { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+#app.enter .screen { animation: screen-in 0.45s var(--ease); }
+.spacer { flex: 1; }
+.wide { width: 100%; }
+.center { text-align: center; }
+.muted { color: var(--muted); }
+
+/* ---------- Типографика ---------- */
+h1, h2 { font-family: var(--serif); font-weight: 500; margin: 0; }
+h1 { font-size: 68px; line-height: 1; letter-spacing: 0.03em; }
+h2 { font-size: 26px; letter-spacing: -0.01em; }
+h3 { margin: 0; font-size: 17px; font-weight: 600; }
+.hint { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.45; }
+.error { margin: 0; color: var(--red); font-size: 14px; text-align: center; }
+
+/* ---------- Элементы ---------- */
+.topbar { display: flex; align-items: center; gap: 12px; min-height: 40px; }
+.topbar h2, .topbar-title {
+  flex: 1; text-align: center; margin: 0;
+  font-family: var(--serif); font-size: 20px; font-weight: 500;
+}
+.home-top { display: flex; justify-content: flex-end; }
+
+.icon-btn {
+  width: 40px; height: 40px; flex: 0 0 auto;
+  display: grid; place-items: center;
+  border: 1px solid var(--line); border-radius: 12px;
+  background: var(--surface); color: var(--ink);
+  cursor: pointer;
+  transition: transform 0.2s var(--spring), background-color 0.3s, border-color 0.3s;
+}
+.icon-btn:hover { background: var(--surface-2); }
+.icon-btn:active { transform: scale(0.92); }
+.icon-btn svg { width: 20px; height: 20px; }
+
+.btn {
+  border: 1px solid var(--line); border-radius: 14px;
+  padding: 15px 18px;
+  font-size: 16px; font-weight: 600;
+  background: var(--surface); color: var(--ink);
+  cursor: pointer;
+  transition: transform 0.2s var(--spring), background-color 0.2s, opacity 0.2s, border-color 0.3s;
+}
+.btn:hover:not(:disabled) { background: var(--surface-2); }
+.btn:active:not(:disabled) { transform: scale(0.97); }
+.btn:disabled { opacity: 0.4; cursor: default; }
+.btn.primary { background: var(--accent); border-color: transparent; color: var(--on-accent); }
+.btn.primary:hover:not(:disabled) { background: var(--accent-hover); }
+.btn.ghost { background: none; border-color: transparent; color: var(--muted); }
+
+.field { display: flex; flex-direction: column; gap: 6px; font-size: 14px; color: var(--muted); }
+input {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  font-size: 16px;
+  color: var(--ink);
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.3s;
+}
+input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+
+.card-panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+.code-input {
+  text-align: center;
+  font-size: 22px; font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+}
+
+/* ---------- Главный экран ---------- */
+.brand { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
+.fan { position: relative; width: 120px; height: 100px; margin-bottom: 18px; }
+.fan .c {
+  position: absolute; left: 30px; top: 6px;
+  width: 60px; height: 86px; border-radius: 12px;
+  box-shadow: var(--card-shadow);
+  transform-origin: 50% 100%;
+  transform: rotate(var(--r));
+  animation: fan-in 0.8s var(--spring) backwards;
+}
+.fan .c::after { content: ""; position: absolute; inset: 4px; border-radius: 9px; border: 1.5px solid rgba(255, 255, 255, 0.35); }
+.fan .c:nth-child(1) { --r: -24deg; background: var(--red);    animation-delay: 0.05s; }
+.fan .c:nth-child(2) { --r: -8deg;  background: var(--yellow); animation-delay: 0.12s; }
+.fan .c:nth-child(3) { --r: 8deg;   background: var(--green);  animation-delay: 0.19s; }
+.fan .c:nth-child(4) { --r: 24deg;  background: var(--blue);   animation-delay: 0.26s; }
+.menu { display: flex; flex-direction: column; gap: 12px; }
+
+/* ---------- Лобби ---------- */
+.code-block { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-top: 12px; }
+.room-code {
+  border: 1px dashed var(--line); background: var(--surface); border-radius: 20px;
+  cursor: pointer; color: var(--ink);
+  font-family: var(--serif); font-size: 52px; font-weight: 500;
+  letter-spacing: 0.2em; padding: 10px 12px 10px calc(12px + 0.2em);
+  transition: transform 0.2s var(--spring), border-color 0.2s;
+}
+.room-code:hover { border-color: var(--accent); }
+.room-code:active { transform: scale(0.96); }
+.player-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.player-row {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px;
+  display: flex; align-items: center; gap: 12px;
+  animation: rise 0.4s var(--ease) backwards;
+}
+.player-row:nth-child(2) { animation-delay: 0.06s; }
+.player-row:nth-child(3) { animation-delay: 0.12s; }
+.player-row:nth-child(4) { animation-delay: 0.18s; }
+.avatar {
+  width: 36px; height: 36px; flex: 0 0 auto;
+  border-radius: 50%; background: var(--accent-soft); color: var(--accent);
+  display: grid; place-items: center; font-weight: 700; font-size: 15px;
+}
+.player-name { flex: 1; font-weight: 600; }
+.badge { font-size: 12px; background: var(--surface-2); border-radius: 999px; padding: 4px 10px; color: var(--muted); }
+
+/* ---------- Игровой стол ---------- */
+.game { gap: 12px; }
+.opponents { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; min-height: 36px; }
+.opp {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 999px; padding: 6px 14px; font-size: 14px;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+.opp.active { border-color: var(--accent); background: var(--accent-soft); }
+.opp.active::before {
+  content: ""; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent); animation: pulse 1.4s ease-in-out infinite;
+}
+.opp-count { font-weight: 700; }
+
+.table {
+  flex: 1;
+  display: flex; align-items: center; justify-content: center; gap: 26px;
+  min-height: calc(var(--card-h) + 36px);
+  max-height: 360px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 24px;
+  box-shadow: var(--shadow);
+  transition: background-color 0.3s, border-color 0.3s;
+}
+.draw-pile {
+  position: relative;
+  width: var(--card-w); height: var(--card-h);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  border: 0; border-radius: 14px;
+  background: var(--back); color: #faf9f5;
+  box-shadow: 3px 3px 0 var(--back-2), 6px 6px 0 var(--back-3), 8px 10px 18px rgba(0, 0, 0, 0.18);
+  cursor: pointer;
+  transition: transform 0.25s var(--spring), opacity 0.25s;
+}
+.draw-pile::before {
+  content: ""; position: absolute; inset: 14% 10%;
+  border-radius: 50%; border: 2px solid var(--accent); opacity: 0.85;
+}
+.draw-pile span { position: relative; }
+.dp-label { font-size: 15px; font-weight: 700; }
+.dp-count { font-size: 12px; opacity: 0.65; }
+.draw-pile:not(:disabled):hover { transform: translateY(-3px); }
+.draw-pile:not(:disabled):active { transform: scale(0.95); }
+.draw-pile:disabled { opacity: 0.5; cursor: default; }
+.draw-pile.ready { animation: nudge 1.8s ease-in-out infinite; }
+
+.info { display: flex; justify-content: center; gap: 8px; }
+.chip {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 999px; padding: 5px 12px; font-size: 13px; font-weight: 600;
+  transition: background-color 0.3s;
+}
+.chip-red, .chip-green, .chip-blue { color: #fff; border-color: transparent; }
+.chip-yellow { color: #141413; border-color: transparent; }
+.chip-red { background: var(--red); }
+.chip-yellow { background: var(--yellow); }
+.chip-green { background: var(--green); }
+.chip-blue { background: var(--blue); }
+.chip-warn { background: var(--accent); color: var(--on-accent); border-color: transparent; }
+
+.status { margin: 0; text-align: center; font-family: var(--serif); font-weight: 500; font-size: 21px; min-height: 26px; }
+.status.mine { color: var(--accent); }
+.message { margin: 0; text-align: center; color: var(--muted); font-size: 13px; min-height: 18px; }
+.me { display: flex; justify-content: space-between; padding: 0 4px; font-weight: 600; margin-top: auto; }
+.me.active .me-name { color: var(--accent); }
+
+.hand {
+  /* Карты в руке крупнее, чем на столе */
+  --card-w: clamp(86px, 26vw, 116px);
+  --card-h: calc(var(--card-w) * 1.45);
+  display: flex;
+  overflow-x: auto;
+  padding: 34px 12px 14px;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.hand::-webkit-scrollbar { display: none; }
+/* Центрирование, которое не обрезает карты при прокрутке */
+.hand::before, .hand::after { content: ""; margin: auto; }
+.hand .card + .card { margin-left: calc(var(--card-w) * -0.36); }
+
+/* ---------- Карты ----------
+   Все цвета карты берутся из одной переменной --c: фон, значок в центре
+   и фишки совпадают у обычных карт и у карт с действиями. */
+.card {
+  --c: var(--ink);
+  position: relative;
+  flex: 0 0 auto;
+  width: var(--card-w);
+  height: var(--card-h);
+  border-radius: 14px;
+  background: var(--c);
+  color: #fff;
+  box-shadow: var(--card-shadow);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  transition: transform 0.3s var(--spring), box-shadow 0.3s var(--ease), filter 0.3s;
+}
+.card::after {
+  content: ""; position: absolute; inset: 5px; border-radius: 10px;
+  border: 1.5px solid rgba(255, 255, 255, 0.38); pointer-events: none;
+}
+.card-red { --c: var(--red); }
+.card-yellow { --c: var(--yellow); }
+.card-green { --c: var(--green); }
+.card-blue { --c: var(--blue); }
+.card-wild { --c: var(--wild); }
+
+.card .oval {
+  position: absolute; inset: 17% 11%;
+  border-radius: 50%;
+  background: var(--oval);
+  display: grid; place-items: center;
+  overflow: hidden;
+  z-index: 1;
+}
+.card-wild .oval {
+  background: conic-gradient(var(--red) 0 25%, var(--yellow) 0 50%, var(--green) 0 75%, var(--blue) 0);
+}
+.card .center {
+  display: grid; place-items: center;
+  color: var(--c);
+  font-size: calc(var(--card-w) * 0.46);
+  font-weight: 800;
+  line-height: 1;
+}
+.card .center svg { width: calc(var(--card-w) * 0.42); height: calc(var(--card-w) * 0.42); }
+.card-wild .center { color: #fff; font-size: calc(var(--card-w) * 0.4); text-shadow: 0 1px 4px rgba(0, 0, 0, 0.45); }
+
+.card .corner {
+  position: absolute; z-index: 2;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-size: calc(var(--card-w) * 0.19);
+  font-weight: 700;
+  line-height: 1;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25));
+}
+.card .corner svg { width: calc(var(--card-w) * 0.2); height: calc(var(--card-w) * 0.2); }
+.corner.tl { top: 9px; left: 10px; }
+.corner.br { bottom: 9px; right: 10px; transform: rotate(180deg); }
+
+/* Карта сброса слегка повёрнута, как будто её положили рукой */
+.discard .card { cursor: default; transform: rotate(var(--tilt, 0deg)); }
+
+/* Карты в руке: нажатие поднимает карту, свайп вверх играет её.
+   pan-x оставляет горизонтальную прокрутку руки, вертикальные жесты приходят в скрипт. */
+.hand .card { touch-action: pan-x; z-index: 1; }
+.hand .card.playable { transform: translateY(-8px); }
+@media (hover: hover) {
+  .hand .card.playable:hover { transform: translateY(-18px) scale(1.04); z-index: 2; }
+}
+.hand .card:active:not(.unplayable) {
+  transform: translateY(-24px) scale(1.09);
+  z-index: 3;
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.25), 0 0 0 3px var(--accent);
+}
+.card.unplayable { filter: var(--dim); }
+.card.ghost { visibility: hidden; }
+.card.flying { box-shadow: 0 20px 38px rgba(0, 0, 0, 0.3); transition: none; }
+
+.card.deal { animation: deal 0.55s var(--ease) backwards; }
+.card.drop { animation: drop 0.45s var(--spring) backwards; }
+.card.land { animation: land 0.14s linear backwards; }
+.card.nope { animation: nope 0.4s; }
+
+/* ---------- Оверлеи ---------- */
+.overlay {
+  position: fixed; inset: 0; z-index: 10;
+  background: var(--scrim);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: flex-end; justify-content: center;
+  animation: fade 0.25s;
+}
+.overlay.opaque { background: var(--bg); -webkit-backdrop-filter: none; backdrop-filter: none; align-items: center; }
+.sheet {
+  position: relative;
+  width: 100%; max-width: 480px;
+  background: var(--surface);
+  border: 1px solid var(--line); border-bottom: 0;
+  border-radius: 28px 28px 0 0;
+  padding: 28px 20px calc(env(safe-area-inset-bottom) + 24px);
+  display: flex; flex-direction: column; gap: 14px;
+  animation: sheet-up 0.45s var(--spring);
+}
+.sheet::before {
+  content: ""; position: absolute; top: 8px; left: 50%;
+  width: 36px; height: 4px; margin-left: -18px;
+  border-radius: 2px; background: var(--line);
+}
+.overlay.opaque .sheet {
+  max-width: 340px;
+  margin: 20px;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  align-items: center;
+  text-align: center;
+  box-shadow: var(--shadow);
+  animation: pop 0.45s var(--spring);
+}
+.overlay.opaque .sheet::before { display: none; }
+.colors { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.color-btn {
+  height: 64px; border: 0; border-radius: 16px;
+  color: #fff; font-size: 16px; font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s var(--spring);
+}
+.color-btn:active { transform: scale(0.94); }
+.color-btn.color-yellow { color: #141413; }
+.color-btn.color-red { background: var(--red); }
+.color-btn.color-yellow { background: var(--yellow); }
+.color-btn.color-green { background: var(--green); }
+.color-btn.color-blue { background: var(--blue); }
+
+.confetti { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.confetti i {
+  position: absolute; top: -16px; width: 8px; height: 14px; border-radius: 2px;
+  animation: fall linear infinite;
+}
+
+.toast {
+  position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 28px);
+  transform: translate(-50%, 12px);
+  background: var(--ink); color: var(--bg);
+  padding: 10px 16px; border-radius: 999px;
+  font-size: 14px; white-space: nowrap;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s, transform 0.3s var(--spring);
+  z-index: 20;
+}
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ---------- Анимации ---------- */
+@keyframes screen-in { from { opacity: 0; transform: translateY(12px); } }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } }
+@keyframes fan-in { from { opacity: 0; transform: translateY(24px) rotate(0deg) scale(0.8); } }
+@keyframes deal { from { opacity: 0; transform: translateY(80px) scale(0.65) rotate(-8deg); } }
+@keyframes drop { from { opacity: 0; transform: translateY(-44px) scale(0.8) rotate(calc(var(--tilt, 0deg) * 3)); } }
+@keyframes land { from { opacity: 0; } }
+@keyframes nope {
+  0%, 100% { translate: 0; }
+  20% { translate: -8px; }
+  40% { translate: 7px; }
+  60% { translate: -5px; }
+  80% { translate: 3px; }
+}
+@keyframes fade { from { opacity: 0; } }
+@keyframes sheet-up { from { transform: translateY(60px); opacity: 0; } }
+@keyframes pop { from { transform: scale(0.88); opacity: 0; } }
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.5); opacity: 0.5; }
+}
+@keyframes nudge {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+@keyframes fall {
+  from { transform: translateY(0) rotate(0deg); opacity: 1; }
+  to { transform: translateY(105vh) rotate(540deg); opacity: 0.9; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
